@@ -5,12 +5,14 @@ body {
 
 h1 {
     text-align: center;
-    margin-top: 4rem;
+    margin: 4rem 0;
+
 }
 
 .chapters-table {
     max-width: 450px;
     margin: 6rem auto;
+    margin-top: 2rem;
 }
 
 ul.chapters {
@@ -32,4 +34,20 @@ li.chapter p {
 li.chapter {
     display: flex;
     justify-content: space-between;
+}
+
+/* file upload */
+
+.upload-area {
+    border: 1px solid #222;
+    padding: 2rem 4rem;
+    text-align: center;
+    max-width: 300px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.upload-area label {
+    display: block;
+    margin-bottom: 2rem;
 }
