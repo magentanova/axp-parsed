@@ -1,6 +1,6 @@
 $ = sel => document.querySelector(sel)
 
-const chaptersEl = $(".chapters")
+const chaptersTable = $(".chapters-table")
 const fileEl = $("#file-upload")
 const parser = new DOMParser();
 const reader = new FileReader()
@@ -25,33 +25,50 @@ const parseXMLText = text => {
     const findByAttr = (sel, attr, val) => {
         return $x(`${sel}[${attr}="${val}"]`)
     }
-    const linkEls = $$x("LinkList")[1].children
-    linkEls.__proto__.forEach = Array.prototype.forEach
+    const linkLists = $$x("LinkList")
     let chaptersHTML = ""
-    linkEls.forEach(linkEl => {
-        try {
-            const name = getLinkName(linkEl)
-            const targetID = linkEl.getAttribute("LinkTargetUID")
-            const programChain = findByAttr("ProgramChain","ID", targetID)
-            const startID = programChain.querySelector("ProgramList Item Program").getAttribute("StartID")            
-            const position = findByAttr("AnchorList Item", "ID", startID).getAttribute("Position")
-            const regExp = /\(([^)]+)\)/
-            const matches = regExp.exec(position);
-            const positionSecs = matches[1]
+    for (let i = 1; i < linkLists.length; i ++) {
+        // skip the first one because it's an irrelevant menu
+        chaptersHTML += `
+            <h3 class="table-title" >
+                Chapter Group ${i}
+            </h3>
+            <li class="chapter heading">
+                <p class="chapter-name">Title</p>
+                <p class="chapter-position">Position (HH:MM:SS)</p>
+            </li>
+            <ul class="chapters">
+        `
 
-            chaptersHTML += `
-                <li class="chapter">
-                    <p class="chapter-name">${name}</p>
-                    <p class="chapter-position">${positionSecs}</p>
-                </li>
-            `
-        }
-        catch (e) {
-            console.error(e)
-        }
-        // findByAttr("ProgramChain ProgramList Item Program","ID")
-    })
-    chaptersEl.innerHTML = chaptersHTML
+        const linkEls = linkLists[i].children
+        linkEls.__proto__.forEach = Array.prototype.forEach
+        linkEls.forEach(linkEl => {
+            try {
+                const name = getLinkName(linkEl)
+                const targetID = linkEl.getAttribute("LinkTargetUID")
+                const programChain = findByAttr("ProgramChain","ID", targetID)
+                const startID = programChain.querySelector("ProgramList Item Program").getAttribute("StartID")            
+                const position = findByAttr("AnchorList Item", "ID", startID).getAttribute("Position")
+                const regExp = /\(([^)]+)\)/
+                const matches = regExp.exec(position);
+                const positionSecs = matches[1]
+                const hours = Math.floor(positionSecs / 3600)
+                const minutes = Math.floor((positionSecs % ( hours * 3600 ) ) || positionSecs / 60)
+                const seconds = (positionSecs % (minutes * 60) || positionSecs)
+                chaptersHTML += `
+                    <li class="chapter">
+                        <p class="chapter-name">${name}</p>
+                        <p class="chapter-position">${hours}:${minutes}:${parseInt(seconds)}</p>
+                    </li>
+                `
+            }
+            catch (e) {
+                console.error(e)
+            }
+        })
+        chaptersHTML += '</ul>'
+    }
+    chaptersTable.innerHTML = chaptersHTML
 }
 
 
