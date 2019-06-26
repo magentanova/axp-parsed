@@ -18,6 +18,13 @@ const getLinkName = linkEl => {
     }
 }
 
+const padNum = (num, fitLength=2) => {
+    if (num.toString().length < fitLength) {
+        num = "0" + num
+    }
+    return num
+}
+
 const parseXMLText = text => {
     xmlDoc = parser.parseFromString(text, "text/xml")
     $x = sel => xmlDoc.querySelector(sel)
@@ -58,7 +65,7 @@ const parseXMLText = text => {
                 chaptersHTML += `
                     <li class="chapter">
                         <p class="chapter-name">${name}</p>
-                        <p class="chapter-position">${hours}:${minutes}:${parseInt(seconds)}</p>
+                        <p class="chapter-position">${padNum(hours)}:${padNum(minutes)}:${padNum(parseInt(seconds))}</p>
                     </li>
                 `
             }
